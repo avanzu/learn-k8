@@ -18,10 +18,16 @@ apiVersion: v1
 kind: Service
 metadata:
   name: geocoding-service
+  labels:
+    app: geocoding
+    role: api
+    tier: backend
 spec:
   type: LoadBalancer
   selector:
-    app: geocoding-service
+    app: geocoding
+    role: api
+    tier: backend
   ports:
   - port: 3100
     targetPort: 3100
@@ -31,14 +37,22 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: geocoding-service
+  labels:
+    app: geocoding
+    role: api
+    tier: backend
 spec:
   selector:
     matchLabels:
-      app: geocoding-service
+      app: geocoding
+      role: api
+      tier: backend
   template:
     metadata:
       labels:
-        app: geocoding-service
+        app: geocoding
+        role: api
+        tier: backend
     spec:
       containers:
       - name: geocoding-service
@@ -76,5 +90,7 @@ spec:
               configMapKeyRef:
                   key: port
                   name: redis-conf
+          - name: DEBUG
+            value: "feathers*"
                   
 

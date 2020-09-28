@@ -15,15 +15,18 @@ metadata:
   name: mosquitto
   labels:
     app: mosquitto
+    tier: backend
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: mosquitto
+      tier: backend
   template:
     metadata:
       labels:
         app: mosquitto
+        tier: backend
     spec:
       containers:
         - name: mosquitto
@@ -45,15 +48,18 @@ metadata:
   name: mosquitto
   labels:
     app: mosquitto
+    tier: backend
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: mosquitto
+      tier: backend
   template:
     metadata:
       labels:
         app: mosquitto
+        tier: backend
     spec:
       containers:
         - name: mosquitto
