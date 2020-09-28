@@ -1,0 +1,80 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: geocoding-secret
+type: Opaque
+data: 
+  openCageKey: N2M0ZjczOWQ0ZjA2NGIwY2JhNzlkODIxZWJjNGYzMmI=
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: geocoding-conf
+data:
+  port: "3100"
+  hostName: geocoding-service
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: geocoding-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: geocoding-service
+  ports:
+  - port: 3100
+    targetPort: 3100
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: geocoding-service
+spec:
+  selector:
+    matchLabels:
+      app: geocoding-service
+  template:
+    metadata:
+      labels:
+        app: geocoding-service
+    spec:
+      containers:
+      - name: geocoding-service
+        image: geocoding-service
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 3100
+        env:
+          - name: PORT
+            valueFrom:
+              configMapKeyRef:
+                key: port
+                name: geocoding-conf
+          - name: HOST
+            valueFrom:
+              configMapKeyRef:
+                  key: hostName
+                  name: geocoding-conf
+          - name: OPENCAGE_KEY
+            valueFrom:
+              secretKeyRef:
+                  key: openCageKey
+                  name: geocoding-secret
+          - name: REDIS_HOST
+            valueFrom:
+              configMapKeyRef:
+                  key: hostName
+                  name: redis-conf
+          - name: REDIS_PORT
+            valueFrom:
+              configMapKeyRef:
+                  key: port
+                  name: redis-conf
+                  
+

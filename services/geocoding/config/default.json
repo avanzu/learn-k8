@@ -1,0 +1,15 @@
+{
+  "host": "localhost",
+  "port": 3030,
+  "public": "../public/",
+  "paginate": {
+    "default": 10,
+    "max": 50
+  },
+  "openCageKey": "7c4f739d4f064b0cba79d821ebc4f32b",
+  "redis": {
+    "host": "redis-master",
+    "port": "6379",
+    "prefix": "geocoding"
+  }
+}

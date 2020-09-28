@@ -1,0 +1,64 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: mongodb-secret
+type: Opaque
+data: 
+  username: bW9uZ28tdXNlcg==
+  password: UGEkJHcwckQh
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mongodb-configmap
+data:
+  dbHost: mongodb-service
+  dbName: dev
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-service
+spec:
+  selector:
+    app: mongodb-service
+  ports:
+    - port: 27017
+      targetPort: 27017
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongodb-service
+spec:
+  selector:
+    matchLabels:
+      app: mongodb-service
+  template:
+    metadata:
+      labels:
+        app: mongodb-service
+    spec:
+      containers:
+        - name: mongodb-service
+          image: mongo:3.6.17-xenial
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-secret
+                  key: username
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-secret
+                  key: password
+          ports:
+            - containerPort: 27017
+
+
+
+
+
+
+
