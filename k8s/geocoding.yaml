@@ -3,7 +3,7 @@ kind: Secret
 metadata:
     name: geocoding-secret
 type: Opaque
-data: 
+data:
   openCageKey: N2M0ZjczOWQ0ZjA2NGIwY2JhNzlkODIxZWJjNGYzMmI=
 ---
 apiVersion: v1
@@ -58,6 +58,18 @@ spec:
       - name: geocoding-service
         image: geocoding-service
         imagePullPolicy: IfNotPresent
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3100
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        startupProbe:
+          httpGet:
+            path: /health
+            port: 3100
+          failureThreshold: 30
+          periodSeconds: 30  
         resources:
           limits:
             memory: "128Mi"
@@ -92,5 +104,5 @@ spec:
                   name: redis-conf
           - name: DEBUG
             value: "feathers*"
-                  
+
 

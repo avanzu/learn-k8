@@ -1,0 +1,19 @@
+apiVersion: skaffold/v2beta7
+kind: Config
+metadata:
+  name: learn-k-
+build:
+  artifacts:
+  - image: air-quality-service
+    context: services/air-quality
+  - image: geocoding-service
+    context: services/geocoding
+deploy:
+  kubectl:
+    manifests:
+    - k8s/air-quality.yaml
+    - k8s/geocoding.yaml
+    - k8s/ingress.yaml
+    - k8s/mongodb.yaml
+    - k8s/mosquitto.yaml
+    - k8s/redis-master.yaml
