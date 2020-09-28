@@ -1,4 +1,4 @@
-const { join, pathOr, prop, isNil, compose, complement, curry} = require('ramda')
+const { join, pathOr, prop, isNil, compose, complement, curry, groupBy } = require('ramda')
 const yesterday = new Date(Date.now() - 86400000).toISOString()
 const either = require('../../util/either')
 const inspect = require('../../util/inspect')
@@ -12,6 +12,7 @@ const coordinatesByCriteria = curry((app ,query) =>
 
 const coordinates = curry((app, query = {}) => 
   either(isIp,  coordinatesByCriteria(app), coordinatesByIp(app), query))
+
 
 // eslint-disable-next-line no-unused-vars
 module.exports = ({ fetch }, app) => ({
@@ -35,6 +36,11 @@ module.exports = ({ fetch }, app) => ({
       .then(inspect('retrieving air quality data'))
       .then(fetch)
       .then(prop('data'))
+      .then(({meta, results}) => ({
+        total: prop('found', meta),
+        limit: prop('limit', meta),
+        data : groupBy(prop('parameter'), results)
+      }))
       .then(inspect('received air quality data'))
       .then(resolve, reject)
   }),
