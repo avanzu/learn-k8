@@ -1,21 +1,11 @@
-const { join, pathOr, prop, isNil, compose, complement, curry} = require('ramda')
-const either = require('../../util/either')
+const { join, pathOr, prop } = require('ramda')
 const inspect = require('../../util/inspect')
-const isIp = compose(complement(isNil), prop('ip')) 
-
-const coordinatesByIp = curry((app, {ip}) =>
-  app.service('geoip').get(ip))
-  
-const coordinatesByCriteria = curry((app ,query) => 
-  app.service('geo').find({ query }))
-
-const coordinates = curry((app, query = {}) => 
-  either(isIp,  coordinatesByCriteria(app), coordinatesByIp(app), query))
+const resolveCoordinates = require('../../util/coordinates')
 
 // eslint-disable-next-line no-unused-vars
 module.exports = ({ fetch }, app) => ({
   find: params => new Promise((resolve, reject) => {
-    coordinates(app, params.query)
+    resolveCoordinates(app, params.query)
       .then(inspect('retrieved coordinates'))
       .then( ({ latitude, longitude }) => ({
         baseURL: 'https://api.openaq.org/v1',
